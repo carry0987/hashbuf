@@ -1,5 +1,7 @@
 # @hashbuf/blake3
 
+[![NPM](https://img.shields.io/npm/v/@hashbuf/blake3.svg)](https://www.npmjs.com/package/@hashbuf/blake3)
+
 BLAKE3 cryptographic hash function powered by Rust/WASM. Supports one-shot hashing, double hashing, keyed MAC, and incremental streaming.
 
 ## Install

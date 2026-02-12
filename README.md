@@ -1,5 +1,6 @@
 # hashbuf
-[![CI](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml/badge.svg)](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml)  
+[![CI](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml/badge.svg)](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml)
+
 High-performance hash functions for JavaScript/TypeScript, powered by Rust and WebAssembly.
 
 ## Features
@@ -14,11 +15,11 @@ High-performance hash functions for JavaScript/TypeScript, powered by Rust and W
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| [`@hashbuf/blake3`](./packages/blake3) | BLAKE3 hash, double hash, keyed MAC, streaming |
-| [`@hashbuf/sha256`](./packages/sha256) | SHA-256 hash, double hash, HMAC-SHA256, streaming |
-| [`@hashbuf/types`](./packages/types) | Shared `Hasher` and `HashAlgorithm` interfaces |
+| Package | NPM | Description |
+|---------|-----|-------------|
+| [`@hashbuf/blake3`](./packages/blake3) | [![NPM](https://img.shields.io/npm/v/@hashbuf/blake3.svg)](https://www.npmjs.com/package/@hashbuf/blake3) | BLAKE3 hash, double hash, keyed MAC, streaming |
+| [`@hashbuf/sha256`](./packages/sha256) | [![NPM](https://img.shields.io/npm/v/@hashbuf/sha256.svg)](https://www.npmjs.com/package/@hashbuf/sha256) | SHA-256 hash, double hash, HMAC-SHA256, streaming |
+| [`@hashbuf/types`](./packages/types) | [![NPM](https://img.shields.io/npm/v/@hashbuf/types.svg)](https://www.npmjs.com/package/@hashbuf/types) | Shared `Hasher` and `HashAlgorithm` interfaces |
 
 ## Quick Start
 

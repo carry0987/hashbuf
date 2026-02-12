@@ -1,5 +1,7 @@
 # @hashbuf/types
 
+[![NPM](https://img.shields.io/npm/v/@hashbuf/types.svg)](https://www.npmjs.com/package/@hashbuf/types)
+
 Shared type definitions for hashbuf packages.
 
 ## Install

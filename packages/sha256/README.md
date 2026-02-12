@@ -1,5 +1,7 @@
 # @hashbuf/sha256
 
+[![NPM](https://img.shields.io/npm/v/@hashbuf/sha256.svg)](https://www.npmjs.com/package/@hashbuf/sha256)
+
 SHA-256 cryptographic hash function and HMAC-SHA256 powered by Rust/WASM. Supports one-shot hashing, double hashing, HMAC, and incremental streaming.
 
 ## Install
