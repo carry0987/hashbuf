@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "name": "hashbuf",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build:rust": "pnpm --filter './packages/*' run build:rust",
+    "sync:from-rust": "pnpm --filter './packages/*' run sync:from-rust",
+    "build:wasm": "pnpm --filter './packages/*' run build:wasm",
+    "build:typescript": "pnpm --filter './packages/*' run build:typescript",
+    "build": "pnpm --filter './packages/*' run build",
+    "build:all": "pnpm run build:rust && pnpm run sync:from-rust && pnpm run build",
+    "test": "pnpm --filter './packages/*' run test",
+    "typecheck": "pnpm --filter './packages/*' run typecheck",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "clean": "pnpm --filter './packages/*' run clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carry0987/hashbuf"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "@hashbuf/sha256",
+  "version": "1.0.0",
+  "description": "SHA-256 hash and HMAC-SHA256 with streaming support, powered by Rust/WASM.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
+    "build:rust": "cd ../../rust/sha256 && chmod +x build.zsh && ./build.zsh",
+    "sync:from-rust": "mkdir -p src/wasm-bundler && cp -r ../../rust/sha256/build/bundler/* src/wasm-bundler/",
+    "build:bundler-to-inline": "mkdir -p src/wasm-inline && cp -r src/wasm-bundler/* src/wasm-inline/",
+    "build:inline-wasm": "tsx build-inline-wasm.ts",
+    "build:wasm": "pnpm run build:bundler-to-inline && pnpm run build:inline-wasm",
+    "build:typescript": "tsc -p tsconfig.build.json",
+    "build": "pnpm run build:wasm && pnpm run build:typescript",
+    "build:all": "pnpm run build:rust && pnpm run sync:from-rust && pnpm run build",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "sha256",
+    "sha-256",
+    "hash",
+    "hmac",
+    "streaming",
+    "crypto",
+    "wasm",
+    "rust",
+    "digest"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carry0987/hashbuf",
+    "directory": "packages/sha256"
+  },
+  "author": "carry0987",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@hashbuf/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.2",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
+  }
+}

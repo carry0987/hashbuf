@@ -1,0 +1,44 @@
+{
+  "name": "@hashbuf/types",
+  "version": "1.0.0",
+  "description": "Shared type definitions for hashbuf packages.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit",
+    "build:typescript": "tsc -p tsconfig.build.json",
+    "build": "pnpm run build:typescript",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "hash",
+    "crypto",
+    "types",
+    "interface"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carry0987/hashbuf",
+    "directory": "packages/types"
+  },
+  "author": "carry0987",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

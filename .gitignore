@@ -1,0 +1,17 @@
+node_modules/
+dist/
+
+# Rust
+rust/target/
+rust/*/build/
+rust/*/target/
+
+# WASM generated artifacts
+packages/*/src/wasm-bundler/
+packages/*/src/wasm-inline/
+
+# Build
+*.tsbuildinfo
+
+# OS
+.DS_Store

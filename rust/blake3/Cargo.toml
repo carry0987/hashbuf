@@ -1,0 +1,23 @@
+[package]
+name = "hashbuf_blake3"
+description = "BLAKE3 hash with streaming support, compiled to WASM."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+wasm = ["wasm-bindgen"]
+
+[dependencies]
+blake3 = "1.5"
+
+[dependencies.wasm-bindgen]
+version = "0.2"
+optional = true
+
+[dev-dependencies]
+hex = "0.4"
