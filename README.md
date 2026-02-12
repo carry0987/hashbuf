@@ -1,5 +1,5 @@
 # hashbuf
-
+[![CI](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml/badge.svg)](https://github.com/carry0987/hashbuf/actions/workflows/ci.yml)  
 High-performance hash functions for JavaScript/TypeScript, powered by Rust and WebAssembly.
 
 ## Features
