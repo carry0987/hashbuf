@@ -1,5 +1,12 @@
 packages:
-  - 'packages/*'
+  - packages/*
+
+catalog:
+  '@types/node': ^25.2.3
+  rimraf: ^6.0.1
+  tsx: ^4.19.2
+  typescript: ^5.9.3
+  vitest: ^3.2.4
 
 onlyBuiltDependencies:
   - esbuild
