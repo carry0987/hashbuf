@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build:rust": "pnpm --filter './packages/*' run build:rust",
+    "build:rust": "pnpm --workspace-concurrency=1 --filter './packages/*' run build:rust",
     "sync:from-rust": "pnpm --filter './packages/*' run sync:from-rust",
     "build:wasm": "pnpm --filter './packages/*' run build:wasm",
     "build:typescript": "pnpm --filter './packages/*' run build:typescript",
