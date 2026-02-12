@@ -18,7 +18,7 @@
     "clean": "rimraf dist",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit",
-    "build:rust": "cd ../../rust/sha256 && chmod +x build.zsh && ./build.zsh",
+    "build:rust": "cd ../../rust/sha256 && chmod +x build.sh && ./build.sh",
     "sync:from-rust": "mkdir -p src/wasm-bundler && cp -r ../../rust/sha256/build/bundler/* src/wasm-bundler/",
     "build:bundler-to-inline": "mkdir -p src/wasm-inline && cp -r src/wasm-bundler/* src/wasm-inline/",
     "build:inline-wasm": "tsx build-inline-wasm.ts",
