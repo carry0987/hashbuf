@@ -2,6 +2,7 @@ import type { HashAlgorithm, Hasher } from '@hashbuf/types';
 import {
     double_sha256_hash,
     sha256_hash,
+    sha256_hex,
     sha256_hmac,
     Sha256Hasher as WasmSha256Hasher
 } from './wasm-inline/hashbuf_sha256.js';
@@ -16,6 +17,15 @@ import {
  */
 export function sha256(data: Uint8Array): Uint8Array {
     return sha256_hash(data);
+}
+
+/**
+ * Compute SHA-256 hash of `data` in one shot, returning a hex string.
+ * More efficient than `sha256()` + manual hex conversion — hex encoding
+ * is performed in WASM, avoiding intermediate Uint8Array allocation.
+ */
+export function sha256Hex(data: Uint8Array): string {
+    return sha256_hex(data);
 }
 
 /**
@@ -104,6 +114,26 @@ export class Sha256Hasher implements Hasher {
             this.inner.free();
             this.freed = true;
         }
+    }
+
+    /**
+     * Consumptive finalize — returns the hash and releases WASM memory.
+     * The hasher must not be used after calling `digest()`.
+     *
+     * - `digest()` → `Uint8Array` (raw 32 bytes)
+     * - `digest('hex')` → `string` (64-char hex, fast path via WASM)
+     */
+    digest(): Uint8Array;
+    digest(encoding: 'hex'): string;
+    digest(encoding?: 'hex'): Uint8Array | string {
+        if (this.freed) {
+            throw new Error('Hasher has been freed');
+        }
+        this.freed = true;
+        if (encoding === 'hex') {
+            return this.inner.digestHex();
+        }
+        return this.inner.digest();
     }
 
     /**

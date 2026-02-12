@@ -13,11 +13,12 @@ npm install @hashbuf/sha256
 ### One-shot hashing
 
 ```ts
-import { sha256, doubleSha256, hmacSha256 } from '@hashbuf/sha256';
+import { sha256, sha256Hex, doubleSha256, hmacSha256 } from '@hashbuf/sha256';
 
 const data = new TextEncoder().encode('hello');
 
 const hash = sha256(data);              // Uint8Array (32 bytes)
+const hex  = sha256Hex(data);           // hex string (64 chars)
 const dhash = doubleSha256(data);       // sha256(sha256(data))
 const mac = hmacSha256(key, data);      // HMAC-SHA256
 ```
@@ -30,8 +31,19 @@ import { Sha256Hasher } from '@hashbuf/sha256';
 const hasher = new Sha256Hasher();
 hasher.update(chunk1);
 hasher.update(chunk2);
-const hash = hasher.finalize();
+const hash = hasher.finalize(); // non-consumptive, can continue updating
 hasher.free();
+```
+
+With consumptive `digest()` (mirrors `node:crypto` style):
+
+```ts
+const hasher = new Sha256Hasher();
+hasher.update(chunk1);
+hasher.update(chunk2);
+const hash = hasher.digest();       // Uint8Array, auto-frees hasher
+// or
+const hex = hasher.digest('hex');   // hex string, single WASM call
 ```
 
 With TC39 Explicit Resource Management:
@@ -67,9 +79,12 @@ await SHA256.stream(source); // async stream
 | Export | Description |
 |--------|-------------|
 | `sha256(data)` | One-shot SHA-256 hash → 32 bytes |
+| `sha256Hex(data)` | One-shot SHA-256 hash → hex string |
 | `doubleSha256(data)` | Double SHA-256 hash → 32 bytes |
 | `hmacSha256(key, data)` | HMAC-SHA256 → 32 bytes |
 | `Sha256Hasher` | Streaming hasher class |
+| `Sha256Hasher.digest()` | Consumptive finalize → `Uint8Array` (auto-frees) |
+| `Sha256Hasher.digest('hex')` | Consumptive finalize → hex `string` (auto-frees) |
 | `sha256Stream(source)` | Hash async iterable → 32 bytes |
 | `SHA256` | `HashAlgorithm` interface singleton |
 

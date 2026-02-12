@@ -31,13 +31,15 @@ npm install @hashbuf/sha256
 ### One-shot hashing
 
 ```ts
-import { blake3 } from '@hashbuf/blake3';
-import { sha256 } from '@hashbuf/sha256';
+import { blake3, blake3Hex } from '@hashbuf/blake3';
+import { sha256, sha256Hex } from '@hashbuf/sha256';
 
 const data = new TextEncoder().encode('hello');
 
-const b3 = blake3(data);   // Uint8Array (32 bytes)
-const s2 = sha256(data);   // Uint8Array (32 bytes)
+const b3 = blake3(data);       // Uint8Array (32 bytes)
+const b3h = blake3Hex(data);   // hex string (64 chars)
+const s2 = sha256(data);       // Uint8Array (32 bytes)
+const s2h = sha256Hex(data);   // hex string (64 chars)
 ```
 
 ### Streaming
@@ -48,8 +50,16 @@ import { Blake3Hasher } from '@hashbuf/blake3';
 const hasher = new Blake3Hasher();
 hasher.update(chunk1);
 hasher.update(chunk2);
-const hash = hasher.finalize(); // 32 bytes
+const hash = hasher.finalize(); // 32 bytes, non-consumptive
 hasher.free(); // release WASM memory
+```
+
+With consumptive `digest()` — auto-frees the hasher:
+
+```ts
+const hasher = new Blake3Hasher();
+hasher.update(data);
+const hex = hasher.digest('hex'); // hex string, single WASM call
 ```
 
 Or with TC39 Explicit Resource Management:

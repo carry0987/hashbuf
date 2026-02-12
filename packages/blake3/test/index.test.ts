@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Blake3Hasher, blake3, blake3Mac, blake3Stream, doubleBlake3 } from '../src/index';
+import { Blake3Hasher, blake3, blake3Hex, blake3Mac, blake3Stream, doubleBlake3 } from '../src/index';
 
 // Helper: convert Uint8Array to hex string
 function toHex(buf: Uint8Array): string {
@@ -31,6 +31,25 @@ describe('blake3 one-shot', () => {
     it('returns 32 bytes', () => {
         const hash = blake3(fromUtf8('hello'));
         expect(hash.length).toBe(32);
+    });
+});
+
+describe('blake3Hex one-shot', () => {
+    it('returns hex for empty input', () => {
+        expect(blake3Hex(fromUtf8(''))).toBe(
+            'af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262'
+        );
+    });
+
+    it('returns hex for known input', () => {
+        expect(blake3Hex(fromUtf8('test input'))).toBe(
+            'aa4909e14f1389afc428e481ea20ffd9673604711f5afb60a747fec57e4c267c'
+        );
+    });
+
+    it('matches toHex(blake3(data))', () => {
+        const data = fromUtf8('consistency check');
+        expect(blake3Hex(data)).toBe(toHex(blake3(data)));
     });
 });
 
@@ -161,6 +180,45 @@ describe('Blake3Hasher streaming', () => {
         const hasher = new Blake3Hasher();
         hasher.free();
         hasher.free(); // should not throw
+    });
+
+    it('digest() returns Uint8Array and frees hasher', () => {
+        const data = fromUtf8('test input');
+        const hasher = new Blake3Hasher();
+        hasher.update(data);
+        const hash = hasher.digest();
+        expect(toHex(hash)).toBe(toHex(blake3(data)));
+        // hasher is consumed, should throw on further use
+        expect(() => hasher.update(fromUtf8('x'))).toThrow('Hasher has been freed');
+    });
+
+    it("digest('hex') returns hex string and frees hasher", () => {
+        const data = fromUtf8('test input');
+        const hasher = new Blake3Hasher();
+        hasher.update(data);
+        const hex = hasher.digest('hex');
+        expect(hex).toBe('aa4909e14f1389afc428e481ea20ffd9673604711f5afb60a747fec57e4c267c');
+        expect(() => hasher.finalize()).toThrow('Hasher has been freed');
+    });
+
+    it('digest() matches finalize() output', () => {
+        const data = fromUtf8('consistency');
+        const hasher1 = new Blake3Hasher();
+        hasher1.update(data);
+        const finalized = hasher1.finalize();
+        hasher1.free();
+
+        const hasher2 = new Blake3Hasher();
+        hasher2.update(data);
+        const digested = hasher2.digest();
+
+        expect(toHex(digested)).toBe(toHex(finalized));
+    });
+
+    it('digest() throws after free', () => {
+        const hasher = new Blake3Hasher();
+        hasher.free();
+        expect(() => hasher.digest()).toThrow('Hasher has been freed');
     });
 });
 

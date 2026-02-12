@@ -14,6 +14,12 @@ pub fn blake3_hash(data: &[u8]) -> Vec<u8> {
     hasher.finalize().as_bytes().to_vec()
 }
 
+/// One-shot BLAKE3 hash returning hex string.
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
+pub fn blake3_hex(data: &[u8]) -> String {
+    hex::encode(blake3::hash(data).as_bytes())
+}
+
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn double_blake3_hash(data: &[u8]) -> Vec<u8> {
     let first = blake3_hash(data);
@@ -74,6 +80,21 @@ impl Blake3Hasher {
     /// Reset the hasher to its initial state, preserving the key if keyed.
     pub fn reset(&mut self) {
         self.inner.reset();
+    }
+
+    /// Consumptive finalize: returns 32-byte hash and drops the hasher.
+    /// Single WASM boundary crossing (vs finalize + free = 2 crossings).
+    pub fn digest(self) -> Box<[u8]> {
+        let hash = self.inner.finalize();
+        hash.as_bytes().to_vec().into_boxed_slice()
+    }
+
+    /// Consumptive finalize returning hex string directly.
+    /// Avoids JS-side Uint8Array → hex conversion.
+    #[cfg_attr(feature = "wasm", wasm_bindgen(js_name = "digestHex"))]
+    pub fn digest_hex(self) -> String {
+        let hash = self.inner.finalize();
+        hex::encode(hash.as_bytes())
     }
 }
 
@@ -201,5 +222,47 @@ mod tests {
         hasher.update(b" world");
         let h3 = hasher.finalize();
         assert_ne!(h1, h3);
+    }
+
+    #[test]
+    fn test_blake3_hex() {
+        let hex = blake3_hex(b"test input");
+        assert_eq!(
+            hex,
+            "aa4909e14f1389afc428e481ea20ffd9673604711f5afb60a747fec57e4c267c"
+        );
+    }
+
+    #[test]
+    fn test_blake3_hex_empty() {
+        let hex = blake3_hex(b"");
+        assert_eq!(
+            hex,
+            "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        );
+    }
+
+    #[test]
+    fn test_digest_matches_finalize() {
+        let mut hasher1 = Blake3Hasher::new();
+        hasher1.update(b"test input");
+        let finalized = hasher1.finalize();
+
+        let mut hasher2 = Blake3Hasher::new();
+        hasher2.update(b"test input");
+        let digested = hasher2.digest();
+
+        assert_eq!(finalized, digested.to_vec());
+    }
+
+    #[test]
+    fn test_digest_hex_matches() {
+        let mut hasher = Blake3Hasher::new();
+        hasher.update(b"test input");
+        let hex = hasher.digest_hex();
+        assert_eq!(
+            hex,
+            "aa4909e14f1389afc428e481ea20ffd9673604711f5afb60a747fec57e4c267c"
+        );
     }
 }

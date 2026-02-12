@@ -10,6 +10,17 @@ export interface Hasher {
     reset(): this;
     /** Release underlying resources (e.g. WASM memory). */
     free(): void;
+
+    /**
+     * Consumptive finalize — returns the hash and releases WASM memory.
+     * The hasher must not be used after calling `digest()`.
+     *
+     * Mirrors `node:crypto`'s `Hash.digest()` API:
+     * - `digest()` → `Uint8Array` (raw bytes)
+     * - `digest('hex')` → `string` (hex-encoded, fast path via WASM)
+     */
+    digest(): Uint8Array;
+    digest(encoding: 'hex'): string;
 }
 
 /**

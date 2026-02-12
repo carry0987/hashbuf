@@ -15,10 +15,8 @@ wasm = ["wasm-bindgen"]
 [dependencies]
 sha2 = "0.10"
 hmac = "0.12"
+hex = "0.4"
 
 [dependencies.wasm-bindgen]
 version = "0.2"
 optional = true
-
-[dev-dependencies]
-hex = "0.4"

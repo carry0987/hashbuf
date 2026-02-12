@@ -20,6 +20,8 @@ interface Hasher {
     finalize(): Uint8Array;
     reset(): this;
     free(): void;
+    digest(): Uint8Array;
+    digest(encoding: 'hex'): string;
 }
 ```
 

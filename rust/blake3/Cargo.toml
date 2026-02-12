@@ -14,10 +14,8 @@ wasm = ["wasm-bindgen"]
 
 [dependencies]
 blake3 = "1.5"
+hex = "0.4"
 
 [dependencies.wasm-bindgen]
 version = "0.2"
 optional = true
-
-[dev-dependencies]
-hex = "0.4"

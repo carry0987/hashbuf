@@ -17,6 +17,14 @@ pub fn sha256_hash(data: &[u8]) -> Vec<u8> {
     hasher.finalize().to_vec()
 }
 
+/// One-shot SHA-256 hash returning hex string.
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
+pub fn sha256_hex(data: &[u8]) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    hex::encode(hasher.finalize())
+}
+
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn double_sha256_hash(data: &[u8]) -> Vec<u8> {
     let first = sha256_hash(data);
@@ -67,6 +75,19 @@ impl Sha256Hasher {
     /// Reset the hasher to its initial state.
     pub fn reset(&mut self) {
         self.inner = self.initial.clone();
+    }
+
+    /// Consumptive finalize: returns 32-byte hash and drops the hasher.
+    /// Single WASM boundary crossing (vs finalize + free = 2 crossings).
+    pub fn digest(self) -> Box<[u8]> {
+        self.inner.finalize().to_vec().into_boxed_slice()
+    }
+
+    /// Consumptive finalize returning hex string directly.
+    /// Avoids JS-side Uint8Array → hex conversion.
+    #[cfg_attr(feature = "wasm", wasm_bindgen(js_name = "digestHex"))]
+    pub fn digest_hex(self) -> String {
+        hex::encode(self.inner.finalize())
     }
 }
 
@@ -183,5 +204,47 @@ mod tests {
         let result = hasher.finalize();
         let expected = sha256_hash(b"abc");
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sha256_hex() {
+        let hex = sha256_hex(b"abc");
+        assert_eq!(
+            hex,
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+    }
+
+    #[test]
+    fn test_sha256_hex_empty() {
+        let hex = sha256_hex(b"");
+        assert_eq!(
+            hex,
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+    }
+
+    #[test]
+    fn test_digest_matches_finalize() {
+        let mut hasher1 = Sha256Hasher::new();
+        hasher1.update(b"abc");
+        let finalized = hasher1.finalize();
+
+        let mut hasher2 = Sha256Hasher::new();
+        hasher2.update(b"abc");
+        let digested = hasher2.digest();
+
+        assert_eq!(finalized, digested.to_vec());
+    }
+
+    #[test]
+    fn test_digest_hex_matches() {
+        let mut hasher = Sha256Hasher::new();
+        hasher.update(b"abc");
+        let hex = hasher.digest_hex();
+        assert_eq!(
+            hex,
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
     }
 }

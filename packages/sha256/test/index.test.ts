@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { doubleSha256, hmacSha256, SHA256, Sha256Hasher, sha256, sha256Stream } from '../src/index.js';
+import { doubleSha256, hmacSha256, SHA256, Sha256Hasher, sha256, sha256Hex, sha256Stream } from '../src/index.js';
 
 // Helper to convert Uint8Array to hex string
 function toHex(buf: Uint8Array): string {
@@ -34,6 +34,25 @@ describe('sha256 one-shot', () => {
     it('returns 32 bytes', () => {
         const hash = sha256(new Uint8Array(100));
         expect(hash.length).toBe(32);
+    });
+});
+
+describe('sha256Hex one-shot', () => {
+    it('returns hex for empty input', () => {
+        expect(sha256Hex(new Uint8Array(0))).toBe(
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        );
+    });
+
+    it("returns hex for 'abc'", () => {
+        expect(sha256Hex(new TextEncoder().encode('abc'))).toBe(
+            'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'
+        );
+    });
+
+    it('matches toHex(sha256(data))', () => {
+        const data = new TextEncoder().encode('consistency check');
+        expect(sha256Hex(data)).toBe(toHex(sha256(data)));
     });
 });
 
@@ -137,6 +156,43 @@ describe('Sha256Hasher streaming', () => {
         const hasher = new Sha256Hasher();
         hasher.free();
         expect(() => hasher.free()).not.toThrow();
+    });
+
+    it('digest() returns Uint8Array and frees hasher', () => {
+        const data = new TextEncoder().encode('abc');
+        const hasher = new Sha256Hasher();
+        hasher.update(data);
+        const hash = hasher.digest();
+        expect(toHex(hash)).toBe(toHex(sha256(data)));
+        expect(() => hasher.update(new Uint8Array(1))).toThrow('Hasher has been freed');
+    });
+
+    it("digest('hex') returns hex string and frees hasher", () => {
+        const hasher = new Sha256Hasher();
+        hasher.update(new TextEncoder().encode('abc'));
+        const hex = hasher.digest('hex');
+        expect(hex).toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+        expect(() => hasher.finalize()).toThrow('Hasher has been freed');
+    });
+
+    it('digest() matches finalize() output', () => {
+        const data = new TextEncoder().encode('consistency');
+        const hasher1 = new Sha256Hasher();
+        hasher1.update(data);
+        const finalized = hasher1.finalize();
+        hasher1.free();
+
+        const hasher2 = new Sha256Hasher();
+        hasher2.update(data);
+        const digested = hasher2.digest();
+
+        expect(toHex(digested)).toBe(toHex(finalized));
+    });
+
+    it('digest() throws after free', () => {
+        const hasher = new Sha256Hasher();
+        hasher.free();
+        expect(() => hasher.digest()).toThrow('Hasher has been freed');
     });
 });
 

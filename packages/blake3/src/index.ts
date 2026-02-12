@@ -1,6 +1,7 @@
 import type { HashAlgorithm, Hasher } from '@hashbuf/types';
 import {
     blake3_hash,
+    blake3_hex,
     blake3_mac,
     double_blake3_hash,
     Blake3Hasher as WasmBlake3Hasher
@@ -16,6 +17,15 @@ import {
  */
 export function blake3(data: Uint8Array): Uint8Array {
     return blake3_hash(data);
+}
+
+/**
+ * Compute BLAKE3 hash of `data` in one shot, returning a hex string.
+ * More efficient than `blake3()` + manual hex conversion — hex encoding
+ * is performed in WASM, avoiding intermediate Uint8Array allocation.
+ */
+export function blake3Hex(data: Uint8Array): string {
+    return blake3_hex(data);
 }
 
 /**
@@ -118,6 +128,26 @@ export class Blake3Hasher implements Hasher {
             this.inner.free();
             this.freed = true;
         }
+    }
+
+    /**
+     * Consumptive finalize — returns the hash and releases WASM memory.
+     * The hasher must not be used after calling `digest()`.
+     *
+     * - `digest()` → `Uint8Array` (raw 32 bytes)
+     * - `digest('hex')` → `string` (64-char hex, fast path via WASM)
+     */
+    digest(): Uint8Array;
+    digest(encoding: 'hex'): string;
+    digest(encoding?: 'hex'): Uint8Array | string {
+        if (this.freed) {
+            throw new Error('Hasher has been freed');
+        }
+        this.freed = true;
+        if (encoding === 'hex') {
+            return this.inner.digestHex();
+        }
+        return this.inner.digest();
     }
 
     /**
