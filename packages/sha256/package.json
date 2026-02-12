@@ -1,6 +1,6 @@
 {
   "name": "@hashbuf/sha256",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SHA-256 hash and HMAC-SHA256 with streaming support, powered by Rust/WASM.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -49,6 +49,9 @@
   },
   "author": "carry0987",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@hashbuf/types": "workspace:^"
   },

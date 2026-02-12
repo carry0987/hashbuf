@@ -1,6 +1,6 @@
 {
   "name": "@hashbuf/blake3",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "BLAKE3 hash with streaming support, powered by Rust/WASM. Works in Node.js, Deno, Bun, and browsers.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -47,6 +47,9 @@
   },
   "author": "carry0987",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@hashbuf/types": "workspace:^"
   },

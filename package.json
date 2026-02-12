@@ -15,7 +15,9 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
-    "clean": "pnpm --filter './packages/*' run clean"
+    "clean": "pnpm --filter './packages/*' run clean",
+    "version-packages": "changeset version",
+    "release": "pnpm run build && changeset publish"
   },
   "repository": {
     "type": "git",
