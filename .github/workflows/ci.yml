@@ -56,7 +56,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build (Rust → WASM → TypeScript)
-        run: pnpm run build:all
+        run: pnpm run build:all --workspace-concurrency=1
 
       - name: Run tests
         run: pnpm test
