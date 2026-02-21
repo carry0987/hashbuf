@@ -24,7 +24,7 @@
     "url": "https://github.com/carry0987/hashbuf"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.15",
+    "@biomejs/biome": "^2.4.4",
     "@changesets/cli": "^2.29.8",
     "@types/node": "catalog:",
     "typescript": "catalog:",
